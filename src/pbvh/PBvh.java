@@ -1,19 +1,68 @@
+/**
+
+Processing port of ofxBvh from perfume-dev:
+https://github.com/perfume-dev/example-openFrameworks/tree/9563bdf21b9d0ffaa735624a2edc7ad6468ee7a3/ofxBvh
+
+ported by Patrick Hebron and Greg Borenstein
+
+**/
+
+package pbvh;
+
+import processing.core.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PBvh {	
-	PBvh() {
-		root           = NULL;
+	
+	protected float play_head;
+	protected ArrayList<Float> currentFrame; // looks like this should be a FrameData object
+	protected boolean loop;
+	protected boolean need_update;
+	protected boolean frame_new;
+	protected int num_frames;
+	protected float rate;
+	protected boolean playing;
+	protected PBvhJoint root;
+	protected int total_channels;
+	protected PApplet parent;
+	protected ArrayList<ArrayList<Float>> frames;
+	protected float frame_time;
+	protected ArrayList<PBvhJoint> joints;
+	protected HashMap <String, PBvhJoint>jointMap;
+	protected int frameCount;
+
+	
+	PBvh(PApplet p, String path) {
+		root           = null;
 		total_channels = 0; 
 		rate           = 1; 
 		loop           = false; 
 		playing        = false; 
 		play_head      = 0;
 		need_update    = false;
+		parent		   = p;
+		frameCount	   = 0;
+		
+		joints = new ArrayList();
+		frames = new ArrayList();
+		currentFrame = new ArrayList();
+		jointMap = new HashMap();
+		
+		load(path);
 	}
+	
+	// TODO:
+	void parseHierarchy(String data){}
+	void parseMotion(String data){}
+	void updateJoint(int index, ArrayList<Float>frame_data, PBvhJoint joint){}
+
 
 	void load(String path) {
 		File file = new File(path);
@@ -50,7 +99,7 @@ public class PBvh {
 		int MOTION_BEGIN    = data.indexOf("MOTION");
 
 		if(HIERARCHY_BEGIN == -1 || MOTION_BEGIN == -1) {
-			println("PBvh: Invalid bvh format.");
+			parent.println("PBvh: Invalid bvh format.");
 			return;
 		}
 		
@@ -58,7 +107,7 @@ public class PBvh {
 		parseMotion(data.substring(MOTION_BEGIN));
 
 		// TODO: COME BACK TO THIS!
-		currentFrame = frames[0]; 
+		currentFrame = frames.get(0); 
 
 		int index = 0;
 		updateJoint(index, currentFrame, root);
@@ -66,10 +115,12 @@ public class PBvh {
 		frame_new = false;
 	}
 	
+	
+	
 	void unload() {
 		joints.clear();
 
-		root = NULL;
+		root = null;
 
 		frames.clear();
 		currentFrame.clear();
@@ -87,49 +138,51 @@ public class PBvh {
 	
 	void play() 					{playing = true;}
 	void stop() 					{playing = false;}
-	bool isPlaying()				{return playing;}
+	boolean isPlaying()				{return playing;}
 	
 	void setLoop(boolean yn)		{loop = yn;}
-	bool isLoop() 					{return loop;}
+	boolean isLoop() 			    {return loop;}
 
 	void setRate(float iRate) 		{rate = iRate;}
 	
-	bool isFrameNew()   			{return frame_new;}
+	boolean isFrameNew()   			{return frame_new;}
 
 	void setFrame(int index) {
-		if (ofInRange(index, 0, frames.size()) && getFrame() != index) {
-			currentFrame = frames[index];
+		if(index >= 0 && index < frames.size() && getFrame() != index) {
+			currentFrame = frames.get(index);
 			play_head = (float)index * frame_time;
 			need_update = true;
 		}
 	}
 
-	int getFrame()					{return floor(play_head / frame_time);}
+	int getFrame()					{return parent.floor(play_head / frame_time);}
 
-	void setPosition(float pos) 	{setFrame((float)frames.size() * pos);}
+	void setPosition(float pos) 	{setFrame((int)((float)frames.size() * pos));}
 	float getPosition() 			{return play_head / (float)frames.size();}
 
 	float getDuration()				{return (float)frames.size() * frame_time;}
 	
 	int getNumJoints() 				{return joints.size();}
-	PBvhJoint getJoint(int index) 	{return joints.at(index);}
-	PBvhJoint getJoint(string name)	{return jointMap[name];}
+	PBvhJoint getJoint(int index) 	{return joints.get(index);}
+	PBvhJoint getJoint(String name)	{return jointMap.get(name);}
 	
 	void update() {
 		frame_new = false;
 		
-		// TODO: Replace ofGetFrameNum() and ofGetLastFrameTime() with appropriate...
-
-		if(playing && ofGetFrameNum() > 1) {
+		// TODO: Replace ofGetLastFrameTime() with appropriate...
+		//		 => not sure that exists. may need to keep track manually...
+		if(playing && frameCount > 1) {
 			int last_index = getFrame();
 
-			play_head += ofGetLastFrameTime() * rate;
+			// FIXME: this should be the P5 equivalent of ofGetLastFrameTime() 
+			float lastFrameTime = (float)0.2;
+			play_head += lastFrameTime * rate;
 			int index = getFrame();
 
 			if(index != last_index) {
 				need_update = true;
 
-				currentFrame = frames[index];
+				currentFrame = frames.get(index);
 
 				if (index >= frames.size()) {
 					if (loop)
@@ -154,8 +207,11 @@ public class PBvh {
 	
 	
 	// TODO
-	void draw();// TODO
-	
+	void draw(){
+		
+	}
+}
+	/*
 protected:
 	
 	typedef vector<float> FrameData;
@@ -188,3 +244,4 @@ protected:
 	void parseMotion(const string& data);// TODO
 	
 };
+*/

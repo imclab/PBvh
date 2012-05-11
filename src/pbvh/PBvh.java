@@ -208,7 +208,44 @@ public class PBvh {
 	
 	// TODO
 	void draw(){
+		parent.pushStyle();
 		
+		
+		for (int i = 0; i < joints.size(); i++){
+			PBvhJoint o = joints.get(i);
+			parent.pushMatrix();
+		
+			
+			//glMultMatrixf(o->getGlobalMatrix().getPtr());
+			/*
+			if (o->isSite())
+			{
+				ofSetColor(ofColor::yellow);
+				billboard();
+				ofCircle(0, 0, 6);
+			}
+			else if (o->getChildren().size() == 1)
+			{
+				ofSetColor(ofColor::white);		
+				billboard();
+				ofCircle(0, 0, 2);
+			}
+			else if (o->getChildren().size() > 1)
+			{
+				if (o->isRoot())
+					ofSetColor(ofColor::cyan);
+				else
+					ofSetColor(ofColor::green);
+				
+				billboard();
+				ofCircle(0, 0, 4);
+			}
+			*/
+			
+			parent.popMatrix();
+		}
+		
+		parent.popStyle();
 	}
 }
 	/*

@@ -2,6 +2,7 @@ package pbvh;
 
 import java.util.ArrayList;
 
+import processing.core.PMatrix3D;
 import processing.core.PVector;
 
 public class PBvhJoint {
@@ -9,6 +10,8 @@ public class PBvhJoint {
 	protected PBvhJoint parent;
 	protected PVector offset;
 	protected ArrayList<PBvhJoint> children;
+	protected PMatrix3D matrix;
+	protected PMatrix3D global_matrix;
 	
 	PBvhJoint(String n, PBvhJoint p){
 		name = n;
@@ -23,19 +26,23 @@ public class PBvhJoint {
 	public boolean isRoot()  				   { return parent == null; }
 	public ArrayList<PBvhJoint> getChildren()  { return children; }
 	public boolean isSite()  				   { return children.size() == 0; }
-
-	/*
+	private PMatrix3D getMatrix()  			   { return matrix; }
+	private PMatrix3D getGlobalMatrix() 	   { return global_matrix; }
 	
+	public PVector getPosition() {
+		return new PVector(matrix.m30, matrix.m31, matrix.m32);
+	}
+	
+	/*
 	// TODO: Matrix methods that need some P5 equiv
-	inline const ofMatrix4x4& getMatrix() const { return matrix; }
-	inline const ofMatrix4x4& getGlobalMatrix() const { return global_matrix; }
-	inline ofVec3f getPosition() const { return global_matrix.getTranslation(); }
 	inline ofQuaternion getRotate() const { return global_matrix.getRotate(); }
 	
-
-	// WTF?
-	inline ofxBvh* getBvh() const { return bvh; }
 	*/
-		
+	
+//	protected PBvh bvh;
+//	private PBvh getBvh() { return bvh; }
+
+
+
 	
 }

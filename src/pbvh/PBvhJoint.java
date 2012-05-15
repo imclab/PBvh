@@ -26,8 +26,8 @@ public class PBvhJoint {
 	public boolean isRoot()  				   { return parent == null; }
 	public ArrayList<PBvhJoint> getChildren()  { return children; }
 	public boolean isSite()  				   { return children.size() == 0; }
-	private PMatrix3D getMatrix()  			   { return matrix; }
-	private PMatrix3D getGlobalMatrix() 	   { return global_matrix; }
+	public PMatrix3D getMatrix()  			   { return matrix; }
+	public PMatrix3D getGlobalMatrix() 	   	   { return global_matrix; }
 	
 	public PVector getPosition() {
 		return new PVector(matrix.m30, matrix.m31, matrix.m32);

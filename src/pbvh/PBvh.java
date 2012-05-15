@@ -205,6 +205,40 @@ public class PBvh {
 		}
 	}
 	
+	//FIXME
+	// this OpenGL bizness needs to get translate to processing
+	void billboard(){
+		/*
+		 	GLfloat m[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
+	
+	float inv_len;
+	
+	m[8] = -m[12];
+	m[9] = -m[13];
+	m[10] = -m[14];
+	inv_len = 1. / sqrt(m[8] * m[8] + m[9] * m[9] + m[10] * m[10]);
+	m[8] *= inv_len;
+	m[9] *= inv_len;
+	m[10] *= inv_len;
+	
+	m[0] = -m[14];
+	m[1] = 0.0;
+	m[2] = m[12];
+	inv_len = 1. / sqrt(m[0] * m[0] + m[1] * m[1] + m[2] * m[2]);
+	m[0] *= inv_len;
+	m[1] *= inv_len;
+	m[2] *= inv_len;
+	
+	m[4] = m[9] * m[2] - m[10] * m[1];
+	m[5] = m[10] * m[0] - m[8] * m[2];
+	m[6] = m[8] * m[1] - m[9] * m[0];
+	
+	glLoadMatrixf(m);
+		 
+		 */
+		
+	}
 	
 	// TODO
 	void draw(){
@@ -215,32 +249,30 @@ public class PBvh {
 			PBvhJoint o = joints.get(i);
 			parent.pushMatrix();
 		
+			parent.applyMatrix(o.getGlobalMatrix());
 			
-			//glMultMatrixf(o->getGlobalMatrix().getPtr());
-			/*
-			if (o->isSite())
-			{
-				ofSetColor(ofColor::yellow);
+			if (o.isSite()){
+				parent.fill(255,255,0);
 				billboard();
-				ofCircle(0, 0, 6);
+				parent.ellipse(0,0,6,6);
 			}
-			else if (o->getChildren().size() == 1)
-			{
-				ofSetColor(ofColor::white);		
+			else if (o.getChildren().size() == 1){
+				parent.fill(255);		
 				billboard();
-				ofCircle(0, 0, 2);
+				parent.ellipse(0,0,2,2);
 			}
-			else if (o->getChildren().size() > 1)
-			{
-				if (o->isRoot())
-					ofSetColor(ofColor::cyan);
-				else
-					ofSetColor(ofColor::green);
+			else if (o.getChildren().size() > 1){
+				if (o.isRoot()){
+					parent.fill(0,0,255);
+				} else {
+					parent.fill(0,255,0);
+					
+				}
 				
 				billboard();
-				ofCircle(0, 0, 4);
+				parent.ellipse(0,0,4,4);
 			}
-			*/
+			
 			
 			parent.popMatrix();
 		}
@@ -248,6 +280,8 @@ public class PBvh {
 		parent.popStyle();
 	}
 }
+
+
 	/*
 protected:
 	
